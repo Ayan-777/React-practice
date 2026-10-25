@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import RecipeCard from "../component/recipesCard";
+import { Link, useOutletContext } from "react-router-dom";
+
 
 export default function HomePage() {
+  const {bucket, handleAddToPlan} = useOutletContext();
   const [isLoading, setIsLoading] = useState(true);
   const [recipes, setRecipes] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  
+
   useEffect(() => {
     const feacthdata = async () => {
       try {
@@ -25,6 +31,8 @@ export default function HomePage() {
     feacthdata();
   }, []);
 
+
+
   const filterRecipes = recipes.filter((item) => {
     return item.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
@@ -32,7 +40,7 @@ export default function HomePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-white text-xl font-semibold">
-        Recipes are loading...
+        Recipes are loading ↻
       </div>
     );
   }
@@ -46,7 +54,13 @@ export default function HomePage() {
           </h1>
           <div className="bg-white text-black text-sm sm:text-base font-bold px-8 py-2.5 rounded-full shadow-lg">
             Recipe Finder &amp; Meal Planner
-          </div>
+          </div> 
+          <Link to = "/plan"
+          className="fixed top-9 right-9 z-50 bg-white text-black px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:bg-zinc-200 transition-all"
+          > 
+          <span>🛒</span>
+          <span> {bucket.reduce((sum,item) => sum + item.quantity, 0)} items</span>
+          </Link>
         </header>
         <div className="relative w-full max-w-md mb-14">
           <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">🔍</span>
@@ -61,7 +75,7 @@ export default function HomePage() {
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filterRecipes.map((item) => (
-            <RecipeCard key={item.id} recipe={item}></RecipeCard>
+            <RecipeCard key={item.id} recipe={item} onAddToPlan={handleAddToPlan}></RecipeCard>
           ))}
         </div>
       </div>
